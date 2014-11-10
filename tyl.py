@@ -6,7 +6,6 @@ TODO
   - No support for ?, &, ~
   - Add support for special symbol to indicate the end of the stack, in case one
     doesn't want to deal with the extra zeros.
-  - Add support for switching from one stack to another.
 """
 
 class Tyl(object):
@@ -14,7 +13,9 @@ class Tyl(object):
   def __init__(self, filename):
     self.board = self._build_board(filename)
     self.pc = '>'
-    self.position = (0, 0)
+
+    # Initial position is one off of the start position.
+    self.position = (0, -1)
     
     self.string_mode = False
     self.skip_next_command = False
@@ -156,13 +157,10 @@ class Tyl(object):
   def _swap_top_elements(self):
     i = self.stack_index
     j = (i + 1) % 2
-
-    a = self.stacks[i]._pop()
-    b = self.stacks[j]._pop()
-
-    self.stacks[i]._push(b)
-
-    self.stacks[j]._push(a)
+    a = self._pop()
+    self._switch_stacks()
+    self._push(a)
+    self._switch_stacks()
 
   def _update_position(self):
     x, y = self.position
@@ -273,9 +271,10 @@ class Tyl(object):
     self._push_int(val) 
 
   def run(self):
-    current_symbol = self.read(self.position[0], self.position[1])
+    current_symbol = None
     while current_symbol != '@':
-      # print self.stack
+      # print(self.stacks[0])
+      # print(self.stacks[1])
       current_symbol = self._update()
 
 def main(argv):
