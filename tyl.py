@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 
 """
@@ -71,9 +72,9 @@ class Tyl(object):
 
   def _display_top(self, symbol):
     if symbol == ',':
-      print str(unichr(self._pop()))
+      print(str(unichr(self._pop())), end='')
     else:
-      print int(self._pop())
+      print(int(self._pop()), end='')
 
   def _switch_stacks(self):
     self.stack_index = (self.stack_index + 1) % 2
