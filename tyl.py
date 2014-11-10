@@ -2,7 +2,7 @@ import sys
 
 """
 TODO
-  - No support for ?, g, p, &, ~
+  - No support for ?, &, ~
   - Add support for special symbol to indicate the end of the stack, in case one
     doesn't want to deal with the extra zeros.
 """
@@ -43,8 +43,8 @@ class Tyl(object):
       padded_row = row + [' '] * (80 - len(row))
       padded_board.append(padded_row)
 
-    if len(padded_row) < 25:
-      for i in range(25- len(padded_row)):
+    if len(padded_board) < 25:
+      for i in range(25- len(padded_board)):
         padded_board.append([' '] * 25)
 
     return padded_board
@@ -80,7 +80,7 @@ class Tyl(object):
     x, y = self._update_position()
     updated_symbol = self.read(x, y)
 
-    #print updated_symbol
+    # print updated_symbol
 
     if not self.skip_next_command:
       if updated_symbol == '\"':
@@ -96,7 +96,7 @@ class Tyl(object):
 
     updated_symbol = self.read(x, y)
 
-    #print updated_symbol
+    # print updated_symbol
 
     if not self.skip_next_command:
       if updated_symbol == '\"':
@@ -129,6 +129,9 @@ class Tyl(object):
 
       elif updated_symbol == '#':
         self.skip_next_command = True
+
+      elif updated_symbol in 'pg':
+        self._update_board(updated_symbol)
     else:
       self.skip_next_command = False
 
@@ -151,6 +154,17 @@ class Tyl(object):
 
     self.position = x, y
     return self.position
+
+  def _update_board(self, operator):
+    if operator == 'g':
+      y = self._pop()
+      x = self._pop()
+      self._push(self.read(x, y))
+    elif operator == 'p':
+      y = self._pop()
+      x = self._pop()
+      v = self._pop()
+      self.board[x][y] = v
 
   def _duplicate_top(self):
     a = self._pop()
@@ -234,7 +248,7 @@ class Tyl(object):
   def run(self):
     current_symbol = self.read(self.position[0], self.position[1])
     while current_symbol != '@':
-      #print self.stack
+      # print self.stack
       current_symbol = self._update()
 
 def main(argv):
