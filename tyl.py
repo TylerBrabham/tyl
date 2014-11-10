@@ -13,9 +13,13 @@ class Tyl(object):
     self.board = self._build_board(filename)
     self.pc = '>'
     self.position = (0, 0)
-    self.stack = []
+    
     self.string_mode = False
     self.skip_next_command = False
+    
+    self.stacks = [[], []]
+    self.stack = self.stacks[0]
+    self.stack_index = 0
 
   def __str__(self):
     string = ""
@@ -69,6 +73,10 @@ class Tyl(object):
       print str(unichr(self._pop()))
     else:
       print int(self._pop())
+
+  def _switch_stacks(self):
+    self.stack_index = (self.stack_index + 1) % 2
+    self.stack = self.stacks[self.stack_index]
 
   def _update(self):
     if self.string_mode:
@@ -132,6 +140,9 @@ class Tyl(object):
 
       elif updated_symbol in 'pg':
         self._update_board(updated_symbol)
+
+      elif updated_symbol == 's':
+        self._switch_stacks()
     else:
       self.skip_next_command = False
 
