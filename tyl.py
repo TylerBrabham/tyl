@@ -15,12 +15,16 @@ class Tyl(object):
     self.pc = '>'
     self.position = (0, 0)
     self.stack = []
+    self.string_mode = False
 
   def __str__(self):
     string = ""
     for row in self.board:
       string += ''.join(row) + '\n'
     return string
+
+  def _toggle_string_mode(self):
+    self.string_mode = not self.string_mode
 
   def read(self, x, y):
     # First we should check that it exists in the board.
@@ -64,15 +68,30 @@ class Tyl(object):
       print int(self._pop())
 
   def _update(self):
+    if self.string_mode:
+      self._update_string_mode()
+    else:
+      self._update_regular_mode()
+
+  def _update_string_mode(self):
+    x, y = self._update_position()
+    updated_symbol = self.read(x, y)
+    self._push_ascii(updated_symbol)
+    return updated_symbol
+
+  def _update_regular_mode(self):
     x, y = self._update_position()
 
     updated_symbol = self.read(x, y)
 
-    if updated_symbol in "0123456789":
+    if updated_symbol == '\"':
+      self._toggle_string_mode()
+
+    elif updated_symbol in "0123456789":
       self._push(int(updated_symbol))
 
     elif updated_symbol in "%*/+-":
-      self._apply_operator(updated_symbol)
+      self._apply_math_operator(updated_symbol)
 
     elif updated_symbol in "^v<>":
       self.pc = updated_symbol
@@ -85,6 +104,13 @@ class Tyl(object):
 
     elif updated_symbol == ':':
       self._duplicate_top()
+
+    elif updated_symbol in ',|_!':
+      self._apply_boolean_operator(updated_symbol)
+
+    elif updated_symbol == '\'':
+      # This slash thing is probably wrong
+      self._swap_elements()
 
     return updated_symbol
 
@@ -111,7 +137,7 @@ class Tyl(object):
     self._push(a)
     self._push(a)
 
-  def _apply_operator(self, operator):
+  def _apply_math_operator(self, operator):
     a = self._pop()
     b = self._pop()
     if operator == '+':
@@ -133,6 +159,44 @@ class Tyl(object):
       else:
         self._push(a % b)
 
+  def _apply_boolean_operator(self, operator):
+    if operator == '|':
+      a = self._pop()
+      if a == 0:
+        self.pc = 'v'
+      else:
+        self.pc = '^'
+      self._update_position()
+    elif operator == '_':
+      a = self._pop()
+      if a == 0:
+        self.pc = '>'
+      else:
+        self.pc = '<'
+      self._update_position()
+    elif operator == '!':
+      a = self._pop()
+
+      if a > 0:
+        self._push(0)
+      else:
+        self._push(1)
+    elif operator == '`':
+      a = self._pop()
+      b = self._pop()
+
+      if b > a:
+        self._push(1)
+      else:
+        self._push(0)
+
+  def _swap_elements(self):
+    a = self._pop()
+    b = self._pop()
+
+    self._push(b)
+    self._push(a)
+
   def _pop(self):
     if len(self.stack) > 0:
       return self.stack.pop()
@@ -152,8 +216,8 @@ class Tyl(object):
   def run(self):
     current_symbol = self.read(self.position[0], self.position[1])
     i = 0
-    while current_symbol != '@' and i < 10:
-      print current_symbol
+    while current_symbol != '@' and i < 100:
+      print self.stack
       current_symbol = self._update()
       i += 1
 
