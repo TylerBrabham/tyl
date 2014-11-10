@@ -2,10 +2,9 @@ import sys
 
 """
 TODO
-  - No support for '?'
+  - No support for ?, g, p, &, ~
   - Add support for special symbol to indicate the end of the stack, in case one
     doesn't want to deal with the extra zeros.
-  - Pad each line to be 80 characters wide. Add rows to make it 25 characters.
 """
 
 class Tyl(object):
