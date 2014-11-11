@@ -14,7 +14,7 @@ class Tyl(object):
     self.board = self._build_board(filename)
     self.pc = '>'
 
-    # Initial position is one off of the start position.
+    # Initial position is one off of (0, 0) because the first step moves right.
     self.position = (0, -1)
     
     self.string_mode = False
