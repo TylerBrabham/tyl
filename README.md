@@ -5,4 +5,8 @@ An interpreter for the language tyl. tyl is a dialect of befunge which allows fo
 
 Initially, tyl should be able to run any Befunge-93 code. I may also remove the ability to use the 'p' and 'g' commands, forcing the user to store whatever they need in one of the two stacks.
 
-Includes a tyl interpreter in python and a befunge interpreter in tyl.
+Run tyl by typing:
+  
+  python tyl.py filename
+
+I use the extension .ty for tyl programs.
