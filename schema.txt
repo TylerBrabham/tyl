@@ -1,0 +1,3 @@
+At the top of the interpreter, we store
+
+(x coord)(y coord)(pc)(string mode)
